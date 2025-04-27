@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>算法可视化代码编辑器</title>
+
+  <!-- 样式表 -->
+  <link rel="stylesheet" href="main.css">
+  <link rel="stylesheet" href="Code/editor.css">
+  <link rel="stylesheet" href="AnimatedArea/visualizer.css">
+  
+  <!-- AI聊天窗口样式 -->
+  <link rel="stylesheet" href="Ai/ai-chat.css">
+  <!-- xterm.js CSS -->
+  <link rel="stylesheet" href="lib/xterm-latest/xterm.css">
+
+  <!-- 基础库 -->
+  <script src="lib/vue.js"></script>
+  <script src="lib/xterm-latest/xterm.js"></script>
+  <script src="lib/xterm-latest/xterm-addon-fit.js"></script>
+
+  <!-- 全局xterm适配器 -->
+  <script>
+    // 确保FitAddon全局可用
+    window.FitAddon = window.FitAddon || {};
+    if (typeof window.FitAddon.FitAddon === 'undefined' && typeof FitAddon !== 'undefined') {
+      window.FitAddon.FitAddon = FitAddon;
+    }
+  </script>
+
+  <!-- Monaco编辑器加载器 -->
+  <script>
+    var require = {
+      paths: {
+        'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.36.1/min/vs'
+      }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.36.1/min/vs/loader.js"></script>
+
+  <!-- 核心功能模块 -->
+  <script src="Code/algorithmCodeExamples.js"></script>
+  <script src="AnimatedArea/visualizer.js"></script>
+
+  <!-- 终端和面板管理 -->
+  <script src="Code/terminal/terminal-manager.js"></script>
+
+  <!-- 编辑器和终端 -->
+  <script src="Code/monacoEditor.js"></script>
+  <script src="Code/aiPredictor/aiCodePredictor.js"></script>
+
+  <!-- AI相关功能 -->
+  <script src="Ai/ai-api.js"></script>
+  <script src="Ai/ai-chat.js"></script>
+
+  <!-- Markdown转换器 -->
+  <script src="lib/markdownConverter.js"></script>
+
+  <!-- 主应用脚本（最后加载） -->
+  <script src="script.js"></script>
+
+  <!-- 引导组件 -->
+  <script src="TourGuide/index.js"></script>
+</head>
+<body>
+  <div id="app">
+    <header class="app-header"  >
+      <h1>算法可视化代码编辑器</h1>
+    </header>
+    <div class="toolbar">
+      <div class="language-selector">
+        <label for="language-select">语言:</label>
+        <select id="language-select" v-model="editorSettings.language" @change="changeEditorLanguage">
+          <option value="c">C</option>
+          <option value="cpp">C++</option>
+          <option value="python">Python</option>
+          <option value="java">Java</option>
+        </select>
+      </div>
+
+      <div class="theme-selector">
+        <label for="theme-selector">主题:</label>
+        <select id="theme-selector" v-model="editorSettings.theme" @change="changeEditorTheme">
+          <option value="vs">浅色</option>
+          <option value="vs-dark">深色</option>
+          <option value="hc-black">高对比度</option>
+        </select>
+      </div>
+
+      <button class="run-button" @click="runCode">
+        <span class="run-icon">▶</span> 运行代码
+      </button>
+
+      <!-- 可视化控制区域 - 优化排版 -->
+      <div class="visualization-controls">
+        <!-- 新增重构按钮 -->
+        <button
+          class="control-btn reset-btn"
+          @click="resetAnimation"
+          :disabled="!hasStarted && !isAnimationComplete"
+          title="重新加载动画"
+        >
+          <span class="control-icon">↺</span>
+          重构
+        </button>
+
+        <button
+          class="control-btn play-pause-btn"
+          @click="togglePlayPause"
+          :class="{ 'playing': isPlaying, 'paused': isPaused }"
+        >
+          <span class="control-icon">{{ isPlaying ? '❚❚' : '▶' }}</span>
+          {{ isPlaying ? '暂停' : '开始' }}
+        </button>
+
+        <button
+          class="control-btn prev-btn"
+          @click="stepBackward"
+          :disabled="!hasStarted || isPlaying || isAnimationComplete || currentAnimationStep <= 0"
+        >
+          <span class="control-icon">⏮</span>
+          上一步
+        </button>
+
+        <!-- 进度条移动到这里，上一步和下一步按钮之间 -->
+        <div class="progress-container">
+          <div class="progress-bar" :style="{ width: progress + '%' }"></div>
+          <div class="step-counter" v-if="animationSteps.length > 0">{{ currentAnimationStep }}/{{ animationSteps.length }}</div>
+        </div>
+
+        <button
+          class="control-btn step-btn next-btn"
+          @click="stepForward"
+          :disabled="!hasStarted || isPlaying || isAnimationComplete"
+        >
+          <span class="control-icon">⏭</span>
+          下一步
+        </button>
+
+        <div class="speed-control">
+          <label for="speed-slider">速度:</label>
+          <select id="speed-slider" v-model="animationSpeed" @change="speedChanged">
+            <option value="0.25">0.25x</option>
+            <option value="0.5">0.5x</option>
+            <option value="0.75">0.75x</option>
+            <option value="1.0">1.0x</option>
+            <option value="1.5">1.5x</option>
+            <option value="2.0">2.0x</option>
+            <option value="3.0">3.0x</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+
+
+    <main class="app-container">
+      <!-- 代码区域 -->
+      <div class="code-area" :class="{ 'panel-hidden': !isPanelVisible }">
+         <!-- 添加文件标签栏 -->
+    <div class="file-tabs">
+      <div class="tab-list">
+        <div
+          v-for="tab in fileTabs"
+          :key="tab.id"
+          class="file-tab"
+          :class="{ active: tab.active }"
+          @click="switchFileTab(tab.id)"
+          @dblclick="handleTabDblClick(tab.id)"
+          :title="tab.id === 1 ? '示例代码 - 点击查看代码样例' : '算法文档 - 点击查看算法详细说明'"
+        >
+          <span class="tab-icon" :class="tab.icon">{{ tab.icon === 'js-icon' ? 'JS' : '⟨⟩' }}</span>
+          <span class="tab-name">{{ tab.name }}</span>
+          <button class="tab-close" v-if="fileTabs.length > 1" @click.stop="closeFileTab(tab.id)">×</button>
+        </div>
+        <div class="tab-actions">
+          <button class="new-tab-btn" title="新建文件" @click="createNewFileTab">+</button>
+        </div>
+      </div>
+    </div>
+        <!-- 编辑器容器 -->
+        <div id="monaco-editor-container" class="editor-container" v-show="activeFileTab === 1"></div>
+
+        <!-- 标签2的内容 - 算法文档 -->
+        <div class="tab-content" id="tab-content-2" v-show="activeFileTab === 2">
+          <div class="tab-placeholder">
+            <h2>{{ fileTabs.find(tab => tab.id === 2)?.name }}</h2>
+            <div class="markdown-content">
+              <!-- 算法文档内容将在这里动态加载 -->
+              <p>请选择一个算法，查看对应的文档说明。</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 其他新标签的内容 -->
+        <div class="tab-content" id="tab-content-other" v-show="activeFileTab > 2">
+          <div class="tab-placeholder">
+            <h2>{{ fileTabs.find(tab => tab.id === activeFileTab)?.name }}</h2>
+            <p>这是新建标签的内容区域。您可以在这里添加自定义内容或编辑相关代码。</p>
+          </div>
+        </div>
+
+        <!-- 输出区域 (VSCode风格) -->
+        <div class="output-area" v-show="activeFileTab === 1">
+          <!-- 标签页和操作按钮 -->
+          <div class="panel-header">
+            <div class="panel-tabs">
+              <div class="tab" :class="{ active: activeOutputTab === 'terminal' }" @click="switchTab('terminal')">
+                终端
+              </div>
+              <div class="tab" :class="{ active: activeOutputTab === 'result' }" @click="switchTab('result')">
+                输出
+              </div>
+              <div class="tab" :class="{ active: activeOutputTab === 'problems' }" @click="switchTab('problems')">
+                问题
+              </div>
+              <div class="tab" :class="{ active: activeOutputTab === 'debug' }" @click="switchTab('debug')">
+                调试控制台
+              </div>
+            </div>
+
+            <!-- 终端操作按钮 -->
+            <div class="tab-actions">
+              <button class="action-btn" title="最大化" @click="toggleMaximizePanel">
+                <span class="action-icon">▲</span>
+              </button>
+              <button class="action-btn" title="关闭" @click="togglePanelVisibility">
+                <span class="action-icon">✕</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 输出内容 -->
+          <div class="output-content">
+            <!-- 终端容器 -->
+            <div id="terminal-container" v-show="activeOutputTab === 'terminal'" class="terminal-panel content-panel"></div>
+
+            <!-- 输出面板 -->
+            <div class="output-panel content-panel" v-show="activeOutputTab === 'result'">
+              <div class="terminal-toolbar">
+                <div class="toolbar-actions">
+                  <button class="action-btn" title="清除输出" @click="clearOutput">
+                    <span class="action-icon">🗑️</span>
+                  </button>
+                  <button class="action-btn" :class="{'toggled': isOutputScrollLocked}" title="切换滚动锁定" @click="toggleOutputScrollLock">
+                    <!-- <span class="action-icon">🔒</span> -->
+                  </button>
+                </div>
+              </div>
+              <div class="output">{{ output }}</div>
+            </div>
+
+            <!-- 问题面板 -->
+            <div class="problems-panel content-panel" v-show="activeOutputTab === 'problems'">
+              <div class="problems-toolbar">
+                <div class="filter-container">
+                  <input
+                    type="text"
+                    class="filter-input"
+                    placeholder="筛选问题..."
+                    v-model="problemsFilter"
+                  >
+                </div>
+                <div class="toolbar-actions">
+                  <button class="action-btn" title="清除所有问题" @click="clearProblems">
+                    <!-- <span class="action-icon">🗑️</span> -->
+                  </button>
+                  <button class="action-btn" title="折叠所有" @click="collapseAllProblems">
+                    <span class="action-icon">↑↓</span>
+                  </button>
+                </div>
+              </div>
+              <div class="problems-list">
+                <div v-for="problem in problems" :key="problem.message" class="problem-item" :class="problem.severity">
+                  <div class="problem-severity" :class="problem.severity">{{ problem.severity === 'error' ? '×' : '!' }}</div>
+                  <div class="problem-message">{{ problem.message }}</div>
+                  <div class="problem-location">{{ problem.file }}:{{ problem.line }}</div>
+                </div>
+                <div v-if="problems.length === 0" class="no-problems">
+                  目前没有发现问题
+                </div>
+              </div>
+            </div>
+
+            <!-- 调试控制台 -->
+            <div class="debug-panel content-panel" v-show="activeOutputTab === 'debug'">
+              <div class="debug-toolbar">
+                <div class="toolbar-actions">
+                  <select class="debug-level-select">
+                    <option value="all">所有消息</option>
+                    <option value="warning">警告</option>
+                    <option value="error">错误</option>
+                  </select>
+                  <button class="action-btn" title="清除控制台" @click="clearOutput">
+                    <span class="action-icon">🗑️</span>
+                  </button>
+                </div>
+              </div>
+              <div class="debug-content">
+                <div class="debug-info">
+                  按 F5 开始调试，或单击工具栏上的 "开始调试" 按钮
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 算法可视化区域 -->
+      <div class="visualizer-panel" >
+        <div class="algorithm-selection">
+          <h3>选择算法</h3>
+          <div class="algorithm-categories">
+            <div v-for="(algorithms, category) in algorithms" :key="category" class="algorithm-category" :class="{ 'folded': isCategoryFolded(category) }">
+              <div class="category-header" @click="toggleCategory(category)">
+                <h4>{{ category }}</h4>
+                <span class="fold-icon">▼</span>
+              </div>
+              <ul class="algorithm-list">
+                <li
+                  v-for="algorithm in algorithms"
+                  :key="algorithm.id"
+                  :class="{ active: selectedAlgorithm === algorithm.id }"
+                  @click="selectAlgorithm(algorithm.id)"
+                >
+                  {{ algorithm.name }}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="visualization-area">
+          <canvas id="algorithmCanvas" width="600" height="400" style="width:100%; height:600px"></canvas>
+          <div class="legend" v-if="selectedAlgorithm && getAlgorithmType(selectedAlgorithm) === 'sort'">
+            <div class="legend-item">
+              <div class="legend-color" :style="{ backgroundColor: getColorForState('base') }"></div>
+              <div class="legend-label">初始状态</div>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color" :style="{ backgroundColor: getColorForState('comparing') }"></div>
+              <div class="legend-label">比较元素</div>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color" :style="{ backgroundColor: getColorForState('swapping') }"></div>
+              <div class="legend-label">交换元素</div>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color" :style="{ backgroundColor: getColorForState('sorted') }"></div>
+              <div class="legend-label">已排序</div>
+            </div>
+          </div>
+
+          <!-- 链表交互控制面板 -->
+          <div class="legend" v-else-if="selectedAlgorithm === 'linkedList'">
+            <div class="linkedlist-controls">
+              <div class="linkedlist-input-group">
+                <label for="linkedlist-input" class="linkedlist-input-label">输入数字:</label>
+                <input type="number" id="linkedlist-input" class="linkedlist-input" v-model="linkedListInputValue">
+              </div>
+
+              <div class="linkedlist-buttons">
+                <button class="linkedlist-btn btn-search" @click="onLinkedListAction('search')">搜索</button>
+
+                <div class="linkedlist-dropdown">
+                  <button class="linkedlist-btn btn-insert">插入</button>
+                  <div class="dropdown-content">
+                    <button class="dropdown-item" @click="onLinkedListAction('insertHead')">头部插入</button>
+                    <button class="dropdown-item" @click="onLinkedListAction('insertTail')">尾部插入</button>
+                    <button class="dropdown-item" @click="onLinkedListAction('insertAt')">指定位置插入</button>
+                  </div>
+                </div>
+
+                <div class="linkedlist-dropdown">
+                  <button class="linkedlist-btn btn-remove">移除</button>
+                  <div class="dropdown-content">
+                    <button class="dropdown-item" @click="onLinkedListAction('removeHead')">头部移除</button>
+                    <button class="dropdown-item" @click="onLinkedListAction('removeTail')">尾部移除</button>
+                    <button class="dropdown-item" @click="onLinkedListAction('removeAt')">指定位置移除</button>
+                  </div>
+                </div>
+
+                <button class="linkedlist-btn btn-reset" @click="onLinkedListAction('reset')">重置</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,91 @@
+[
+  {
+    "title": "欢迎使用算法可视化编辑器",
+    "content": "这是一个交互式的算法可视化编辑器，可以帮助你理解和学习各种算法的运行过程。点击'下一步'继续了解主要功能。",
+    "target": "header.app-header",
+    "clip": false,
+    "position":{
+      "left":500,
+      "top":62
+    }
+  },
+  {
+    "title": "代码编辑区",
+    "content": "在这里编写你的代码。你可以选择不同的编程语言，我们支持C、C++、Python和Java。",
+    "target": "#monaco-editor-container",
+    "clip": true,
+    "highlight": {
+      "left": 10,
+      "top": 100,
+      "width": 920,
+      "height": 630
+    }
+  },
+  {
+    "title": "语言选择",
+    "content": "选择你想要使用的编程语言。系统会自动加载相应的代码示例和语法高亮。",
+    "target": ".language-selector",
+    "clip": true,
+    "position": {
+      "left": 200,
+      "top": 100
+    }
+  },
+  {
+    "title": "运行代码",
+    "content": "点击此按钮运行你的代码，查看算法的执行过程和结果。",
+    "target": ".run-button",
+    "clip": true,
+    "position": {
+      "left": 200,
+      "top": 150
+    }
+  },
+  {
+    "title": "算法选择",
+    "content": "从左侧面板选择不同的算法。我们提供了多种排序算法和数据结构实现。",
+    "target": ".algorithm-selection",
+    "clip": true
+
+  },
+  {
+    "title": "可视化区域",
+    "content": "这里会展示算法的可视化过程，帮助你直观理解算法的执行流程。",
+    "target": ".visualization-area",
+    "clip": true,
+    "position": {
+      "left": 400,
+      "top": 300
+    }
+  },
+  {
+    "title": "动画控制",
+    "content": "使用这些按钮控制动画的播放、暂停、前进和后退，还可以调整动画速度。",
+    "target": ".visualization-controls",
+    "clip": true,
+    "position": {
+      "left": 500,
+      "top": 100
+    }
+  },
+  {
+    "title": "终端输出",
+    "content": "这里会显示代码执行的输出结果、错误信息和调试信息。",
+    "target": ".output-area",
+    "clip": true,
+    "position": {
+      "left": 1000,
+      "top": 500
+    }
+  },
+  {
+    "title": "开始使用吧！",
+    "content": "现在你已经了解了编辑器的主要功能，开始你的算法学习之旅吧！如果需要再次查看本指南，可以点击帮助菜单。",
+    "target": "header.app-header",
+    "clip": false,
+    "position":{
+      "left":500,
+      "top":62
+    }
+  }
+]

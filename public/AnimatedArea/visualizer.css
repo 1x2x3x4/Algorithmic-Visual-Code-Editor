@@ -1,0 +1,1031 @@
+/* 动画区域基本样式 */
+.animation-area {
+  flex: 1; 
+  background: #fff;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+}
+
+/* 动画容器 */
+.animation-container {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  height: 100%;
+  gap: 15px; /* 增加间隔 */
+  padding: 10px;
+}
+
+/* Canvas容器 */
+.canvas-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 8px;
+  background-color: #fff;
+  border-radius: 0; /* 移除圆角 */
+  overflow: hidden;
+  height: calc(100% - 16px); /* 减去padding总和 */
+  box-sizing: border-box;
+  gap: 10px;
+}
+
+/* Canvas元素 */
+.canvas-container canvas {
+  width: 100%;
+  height: 100%;
+  border: 1px solid #eee;
+  border-radius: 0; /* 移除圆角 */
+  flex: 1;
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+}
+
+/* 优化Canvas样式，确保在各种屏幕尺寸下都能正确显示 */
+#algorithmCanvas {
+  width: 100%;
+  height: auto; /* 改为auto，让它根据内容调整 */
+  max-height: calc(100% - 60px); /* 为图例预留更多空间 */
+  min-height: 400px; /* 确保最小高度 */
+  border: 1px solid #ccc;
+  border-radius: 0; /* 移除圆角 */
+  box-sizing: border-box;
+  display: block;
+  margin-bottom: 10px; /* 增加下边距，为图例留出空间 */
+}
+
+/* 控制按钮区域 */
+.canvas-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 0; /* 移除圆角 */
+  margin-bottom: 15px;
+  border: 1px solid #eee;
+  position: relative;
+}
+
+.canvas-controls button {
+  position: relative;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 0; /* 移除圆角 */
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  min-width: 80px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+/* 添加按钮图标样式 */
+.control-icon {
+  font-size: 14px;
+  display: inline-block;
+}
+
+.canvas-controls button:disabled {
+  background-color: #cccccc !important;
+  cursor: not-allowed;
+  opacity: 0.7;
+  box-shadow: none;
+  transform: none !important; /* 防止禁用状态下的变换效果 */
+  animation: none !important; /* 禁用动画 */
+}
+
+.canvas-controls button:not(:disabled)::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%);
+  transform-origin: 50% 50%;
+}
+
+.canvas-controls button:not(:disabled):focus:not(:active)::after {
+  animation: ripple 1s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0);
+    opacity: 0.5;
+  }
+  20% {
+    transform: scale(25, 25);
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(40, 40);
+  }
+}
+
+/* 开始按钮 */
+.canvas-controls button:nth-child(1) {
+  background-color: #4CAF50;
+}
+
+.canvas-controls button:nth-child(1):hover {
+  background-color: #45a049;
+}
+
+.canvas-controls button:nth-child(1):active {
+  background-color: #3d8b40;
+  transform: scale(0.98);
+}
+
+/* 暂停按钮 */
+.canvas-controls button:nth-child(2) {
+  background-color: #FFA500;
+}
+
+.canvas-controls button:nth-child(2):hover {
+  background-color: #ff9500;
+}
+
+.canvas-controls button:nth-child(2):active {
+  background-color: #ff8500;
+  transform: scale(0.98);
+}
+
+/* 新增：上一步按钮 */
+.canvas-controls button.prev-btn {
+  background-color: #607D8B;
+}
+
+.canvas-controls button.prev-btn:hover {
+  background-color: #546E7A;
+}
+
+.canvas-controls button.prev-btn:active, 
+.canvas-controls button.prev-btn.step-active {
+  background-color: #455A64;
+  transform: scale(0.98);
+}
+
+/* 修改：下一步按钮 (现在是第4个) */
+.canvas-controls button.next-btn {
+  background-color: #2196F3;
+}
+
+.canvas-controls button.next-btn:hover {
+  background-color: #1976D2;
+}
+
+.canvas-controls button.next-btn:active, 
+.canvas-controls button.next-btn.step-active {
+  background-color: #1565C0;
+  transform: scale(0.98);
+}
+
+/* 重置按钮 - 现在是第5个按钮 */
+.canvas-controls button:nth-child(5) {
+  background-color: #F44336;
+}
+
+.canvas-controls button:nth-child(5):hover {
+  background-color: #e53935;
+}
+
+.canvas-controls button:nth-child(5):active {
+  background-color: #d32f2f;
+  transform: scale(0.98);
+}
+
+/* 给下一步按钮添加脉冲动画以吸引注意 */
+@keyframes pulse-blue {
+  0% {
+    box-shadow: 0 0 0 0 rgba(33, 150, 243, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(33, 150, 243, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(33, 150, 243, 0);
+  }
+}
+
+.canvas-controls button.next-btn:not(:disabled) {
+  animation: pulse-blue 2s infinite;
+}
+
+/* 速度控制样式优化 */
+.speed-control {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px;
+  height: 100%;
+  position: relative;
+}
+
+.speed-control::before {
+  content: '';
+  position: absolute;
+  left: -5px;
+  height: 20px;
+  width: 1px;
+  background-color: #ddd;
+}
+
+.speed-control label {
+  color: #555;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.speed-select {
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+  color: #333;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 80px;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath d='M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z' fill='%23555'/%3E%3C/svg%3E");
+  background-position: right 8px center;
+  background-repeat: no-repeat;
+  padding-right: 25px;
+}
+
+.speed-select:hover {
+  border-color: #2196F3;
+}
+
+.speed-select:focus {
+  outline: none;
+  border-color: #2196F3;
+  box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+}
+
+/* 进度条控制区域 */
+.progress-control {
+  margin-top: 15px;
+  padding: 15px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  border: 1px solid #eee;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+}
+
+/* 进度条滑块优化 */
+.progress-slider {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  background: linear-gradient(to right, #2196F3 0%, #2196F3 var(--progress), #e0e0e0 var(--progress), #e0e0e0 100%);
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+}
+
+/* 进度条状态样式 */
+.progress-slider.playing {
+  background: linear-gradient(to right, #4CAF50 0%, #4CAF50 var(--progress), #e0e0e0 var(--progress), #e0e0e0 100%);
+}
+
+.progress-slider.paused {
+  background: linear-gradient(to right, #FFA500 0%, #FFA500 var(--progress), #e0e0e0 var(--progress), #e0e0e0 100%);
+}
+
+.progress-slider.step-mode {
+  background: linear-gradient(to right, #2196F3 0%, #2196F3 var(--progress), #e0e0e0 var(--progress), #e0e0e0 100%);
+  border: 2px solid #2196F3;
+  height: 10px;
+  transition: all 0.15s ease-out;
+}
+
+/* 进度条更新时的过渡动画 */
+.progress-slider.progress-updated {
+  animation: progress-update-flash 0.3s ease;
+}
+
+@keyframes progress-update-flash {
+  0%, 100% {
+    border-color: rgba(33, 150, 243, 0.3);
+  }
+  50% {
+    border-color: rgba(33, 150, 243, 1);
+    box-shadow: 0 0 8px rgba(33, 150, 243, 0.6);
+  }
+}
+
+/* 增强进度条状态样式 */
+.progress-slider.step-mode {
+  background: linear-gradient(to right, #2196F3 0%, #2196F3 var(--progress), #e0e0e0 var(--progress), #e0e0e0 100%);
+  border: 2px solid #2196F3;
+  height: 10px;
+  transition: background 0.2s ease-out;
+}
+
+/* 进度条滑块在步进模式下的样式 */
+.progress-slider.step-mode::-webkit-slider-thumb {
+  background-color: #2196F3;
+  transform: scale(1.1);
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.3);
+  transition: all 0.15s ease-out;
+}
+
+.progress-slider.step-mode::-moz-range-thumb {
+  background-color: #2196F3;
+  transform: scale(1.1);
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.3);
+  transition: all 0.15s ease-out;
+}
+
+.progress-slider:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.progress-slider:not(:disabled):hover {
+  cursor: grab;
+}
+
+.progress-slider:not(:disabled):active {
+  cursor: grabbing;
+}
+
+.progress-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 15px;
+  height: 15px;
+  background-color: white;
+  border: 2px solid #2196F3;
+  border-radius: 0; /* 移除圆角 */
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+  position: relative;
+  z-index: 2;
+  transition: transform 0.2s;
+}
+
+.progress-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  background: #2196F3;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.progress-slider:not(:disabled)::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+}
+
+.progress-slider:not(:disabled)::-moz-range-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+}
+
+.progress-slider:not(:disabled).step-mode {
+  border: 2px solid #2196F3;
+  height: 10px;
+}
+
+/* 进度条信息区优化 */
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 2px;
+  font-size: 13px;
+  color: #555;
+  font-weight: 500;
+}
+
+.progress-status {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.progress-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.progress-text {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.progress-text::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-color: #2196F3;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+.progress-steps {
+  background-color: #e3f2fd;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  box-shadow: 0 1px 3px rgba(33,150,243,0.2);
+}
+
+/* 进度标记 */
+.progress-marks {
+  position: relative;
+  height: 20px;
+  width: 100%;
+}
+
+.progress-mark {
+  position: absolute;
+  width: 1px;
+  height: 8px;
+  background-color: #bbb;
+  bottom: 0;
+  transform: translateX(-50%);
+}
+
+.progress-mark.major {
+  height: 12px;
+  width: 2px;
+  background-color: #999;
+}
+
+.progress-mark-label {
+  position: absolute;
+  font-size: 10px;
+  color: #777;
+  bottom: 10px;
+  transform: translateX(-50%);
+}
+
+/* 图例区域 */
+.legend {
+  background-color: #f9f9f9;
+  border: 1px solid #eee;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  padding: 8px 15px;
+  /* margin-top: 660px; 增加上边距，与画布保持距离 */
+  margin-bottom: 5px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  border-radius: 4px;
+  width: 100%; /* 确保宽度与canvas一致 */
+  box-sizing: border-box;
+  position: relative; /* 确保正常流布局 */
+  align-self: flex-start; /* 确保它不会被拉伸 */
+  z-index: 1; /* 确保它不会被canvas覆盖 */
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin: 5px 10px;
+  font-size: 14px;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.legend-label {
+  font-size: 13px;
+  color: #555;
+}
+
+/* 紧凑模式图例 - 适应小屏幕 */
+.compact-legend {
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 5px 10px;
+}
+
+.compact-legend .legend-item {
+  margin: 2px 0;
+  font-size: 12px;
+}
+/* 桶排序特定样式 */
+.bucket-sort-main-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  margin-top: 20px;
+}
+
+.array-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  height: 300px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.array-bar {
+  width: 30px;
+  margin: 0 5px;
+  background-color: #6b5b95;
+  position: relative;
+  transition: all 0.3s ease;
+  border-radius: 4px 4px 0 0;
+}
+
+.value-label {
+  position: absolute;
+  bottom: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  color: #333;
+}
+
+.bucket-separator {
+  width: 90%;
+  height: 2px;
+  background-color: #ddd;
+  margin: 20px 0;
+}
+
+.bucket-container {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.bucket {
+  width: 22%;
+  min-height: 180px;
+  background-color: #E0E0E0;
+  border: 2px solid #666;
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  margin: 0 10px;
+  transition: all 0.5s ease;
+  position: relative;
+}
+
+.bucket.active {
+  border-color: #4CAF50;
+  background-color: #E8F5E9;
+}
+
+.bucket-title {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.bucket-range {
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: #757575;
+}
+
+.bucket-elements-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  flex-grow: 1;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+.bucket-bar {
+  width: 20px;
+  margin: 0 3px;
+}
+
+.step-description {
+  margin-top: 20px;
+  font-size: 16px;
+  color: #333;
+  text-align: center;
+  padding: 10px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  border-left: 4px solid #4CAF50;
+}
+
+.step-indicator {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #666;
+  text-align: center;
+}
+
+.phase-indicator {
+  margin-top: 10px;
+  font-weight: bold;
+  color: #4CAF50;
+  border-top: 1px solid #ddd;
+  padding-top: 5px;
+  width: 100%;
+  text-align: center;
+}
+
+/* 新增样式 - 动画效果 */
+.highlighted-element {
+  animation: pulse 0.8s infinite alternate;
+}
+
+.active-element {
+  animation: bounce 0.8s infinite alternate;
+}
+
+.comparing-element {
+  animation: shake 0.8s infinite;
+}
+
+.moving-element {
+  animation: slide 0.5s ease-in-out;
+}
+
+.inserted-element {
+  animation: flash 0.8s;
+}
+
+.bucket-entrance {
+  animation: bucketEntrance 0.5s ease-out;
+}
+
+.sorting-animation {
+  transition: transform 0.4s ease, background-color 0.4s ease;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.1); }
+}
+
+@keyframes bounce {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-10px); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+@keyframes flash {
+  0%, 50%, 100% { opacity: 1; }
+  25%, 75% { opacity: 0.5; }
+}
+
+@keyframes bucketEntrance {
+  0% { transform: translateY(-30px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slide {
+  0% { transform: translateX(-20px); opacity: 0.7; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+/* 比较和移动指示器 */
+.compare-indicator {
+  animation: fadeInOut 1s infinite;
+}
+
+.move-indicator {
+  animation: slideRight 1s infinite;
+}
+
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+@keyframes slideRight {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(10px); }
+  100% { transform: translateX(0); }
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .bucket-container {
+    flex-wrap: wrap;
+  }
+  
+  .bucket {
+    width: 45%;
+    margin-bottom: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .bucket {
+    width: 90%;
+  }
+}
+
+/* 提示框样式 */
+.visualizer-tooltip {
+  position: absolute;
+  padding: 5px 8px;
+  background-color: #333;
+  color: #fff;
+  font-size: 12px;
+  border-radius: 0; /* 移除圆角 */
+  z-index: 1000;
+  pointer-events: none;
+  white-space: nowrap;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  font-family: Arial, sans-serif;
+  opacity: 0.9;
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* 动画 */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 当动画已完成时禁用下一步按钮的特殊样式 */
+.step-btn:disabled {
+  background-color: #a0a0a0 !important;
+}
+
+/* 根据动画状态调整下一步按钮的脉冲动画 */
+.canvas-controls button.step-btn:not(:disabled) {
+  animation: pulse-blue 2s infinite;
+}
+
+/* 添加动画完成状态指示器 */
+.animation-status {
+  background-color: #4CAF50;
+  color: white;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  box-shadow: 0 1px 3px rgba(76,175,80,0.3);
+  animation: fadeIn 0.3s ease, pulse-green 2s infinite;
+}
+
+@keyframes pulse-green {
+  0% {
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(76, 175, 80, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+  }
+}
+
+/* 键盘快捷键提示 */
+.keyboard-shortcuts {
+  display: flex;
+  gap: 8px;
+  color: #777;
+  font-size: 11px;
+}
+
+.keyboard-shortcuts span {
+  display: inline-block;
+  padding: 2px 5px;
+  background-color: #f1f1f1;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  cursor: help;
+}
+
+/* 按钮动效 */
+.canvas-controls button.prev-btn.step-active {
+  background-color: #455A64;
+  animation: button-pulse 0.3s ease;
+}
+
+.canvas-controls button.next-btn.step-active {
+  background-color: #1565C0;
+  animation: button-pulse 0.3s ease;
+}
+
+/* 新增：播放/暂停按钮动效 */
+.canvas-controls button.play-pause-btn.step-active,
+.play-pause-btn.step-active {
+  animation: button-pulse 0.3s ease;
+}
+
+.play-pause-btn.playing.step-active {
+  background-color: #ff8c00;
+}
+
+.play-pause-btn.paused.step-active,
+.play-pause-btn.step-active {
+  background-color: #0d8d40;
+}
+
+@keyframes button-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* 链表交互控制面板 */
+.linkedlist-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.linkedlist-input-group {
+  display: flex;
+  align-items: center;
+}
+
+.linkedlist-input-label {
+  margin-right: 8px;
+  font-size: 14px;
+  color: #555;
+}
+
+.linkedlist-input {
+  width: 80px;
+  padding: 6px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.linkedlist-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.linkedlist-btn {
+  padding: 6px 12px;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.linkedlist-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.linkedlist-btn:active {
+  transform: translateY(1px);
+}
+
+.btn-push {
+  background-color: #4CAF50;
+}
+
+.btn-pop {
+  background-color: #f44336;
+}
+
+.btn-find {
+  background-color: #2196F3;
+}
+
+.btn-reset {
+  background-color: #9e9e9e;
+}
+
+/* 媒体查询，在小屏幕上自适应 */
+@media (max-width: 600px) {
+  .linkedlist-controls {
+    flex-direction: column;
+  }
+  
+  .linkedlist-input-group {
+    margin-bottom: 8px;
+  }
+  
+  .linkedlist-buttons {
+    width: 100%;
+  }
+  
+  .linkedlist-btn {
+    flex: 1;
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+}
+
+/* 链表操作下拉菜单样式 */
+.linkedlist-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  border-radius: 4px;
+}
+
+.linkedlist-dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown-item {
+  color: black;
+  padding: 8px 12px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+  border: none;
+  background: none;
+  width: 100%;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: #f1f1f1;
+}

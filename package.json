@@ -1,0 +1,25 @@
+{
+  "dependencies": {
+    "@xterm/addon-fit": "^0.10.0",
+    "@xterm/xterm": "^5.5.0",
+    "axios": "^1.8.4",
+    "body-parser": "^1.20.3",
+    "child_process": "^1.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "ws": "^8.18.0",
+    "xterm": "^5.3.0"
+  },
+  "name": "1111",
+  "version": "1.0.0",
+  "description": "这是一个基于 HTML5 的算法可视化教学平台，旨在帮助学习者更直观地理解各种排序算法的工作原理。通过动态的可视化展示和详细的步骤说明，使学习者能够更好地掌握算法的核心概念。",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

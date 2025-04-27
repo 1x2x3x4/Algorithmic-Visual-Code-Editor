@@ -1,0 +1,585 @@
+/* AI聊天窗口的样式 */
+.ai-chat-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #4a6bff;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.ai-chat-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.ai-chat-icon {
+  font-size: 24px;
+}
+
+.ai-chat-window {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  width: 460px;
+  height: 580px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 999;
+  transition: all 0.3s ease;
+  transform-origin: bottom right;
+  max-width: 90vw;
+  max-height: 80vh;
+}
+
+.ai-chat-window.hidden {
+  transform: scale(0);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ai-chat-header {
+  padding: 15px 20px;
+  background-color: #4a6bff;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: move;
+}
+
+.ai-chat-title {
+  font-weight: bold;
+  font-size: 18px;
+  position: relative;
+  padding-left: 22px;
+}
+
+/* 在线和离线状态指示器 */
+.ai-chat-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #aaa;
+}
+
+.ai-chat-title.online::before {
+  background-color: #4CAF50;
+  box-shadow: 0 0 8px #4CAF50;
+}
+
+.ai-chat-title.offline::before {
+  background-color: #FFC107;
+  box-shadow: 0 0 8px #FFC107;
+}
+
+.ai-chat-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.ai-chat-control {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+  font-size: 16px;
+}
+
+.ai-chat-control:hover {
+  opacity: 1;
+}
+
+.ai-chat-messages {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  background-color: #f9f9f9;
+}
+
+.ai-message, .user-message {
+  max-width: 85%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  word-wrap: break-word;
+  animation: message-appear 0.3s ease-out;
+  font-size: 15px;
+}
+
+.ai-message {
+  align-self: flex-start;
+  background-color: #f0f0f0;
+  border-bottom-left-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.user-message {
+  align-self: flex-end;
+  background-color: #e1ebff;
+  color: #333;
+  border-bottom-right-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* 用户消息中的代码样式 */
+.user-message pre.code-block {
+  background-color: #282c34;
+  color: #e3e3e3;
+  padding: 10px;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 8px 0;
+  white-space: pre-wrap;
+}
+
+.user-message code {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+  padding: 2px 4px;
+  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  font-size: 0.9em;
+}
+
+.user-message strong {
+  font-weight: 600;
+}
+
+.user-message em {
+  font-style: italic;
+}
+
+.user-message a {
+  color: #0366d6;
+  text-decoration: none;
+}
+
+.user-message a:hover {
+  text-decoration: underline;
+}
+
+/* 错误消息样式 */
+.ai-message.error {
+  background-color: #ffebee;
+  border-left: 3px solid #f44336;
+}
+
+/* 代码块样式 */
+.ai-message pre.code-block {
+  background-color: #282c34;
+  color: #abb2bf;
+  padding: 12px;
+  border-radius: 6px;
+  overflow-x: auto;
+  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 12px 0;
+  white-space: pre-wrap;
+}
+
+@keyframes message-appear {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ai-chat-input-area {
+  padding: 15px;
+  border-top: 1px solid #eee;
+  display: flex;
+  gap: 10px;
+  background-color: white;
+}
+
+.ai-chat-input {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  outline: none;
+  font-family: inherit;
+  font-size: 15px;
+  resize: none;
+  background-color: #f8f8f8;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.ai-chat-input:focus {
+  border-color: #4a6bff;
+  background-color: white;
+}
+
+.ai-chat-input:disabled {
+  background-color: #f0f0f0;
+  color: #888;
+}
+
+.ai-chat-send {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: #4a6bff;
+  color: white;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.ai-chat-send:hover {
+  background-color: #3a5aee;
+  transform: scale(1.05);
+}
+
+.ai-chat-send:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  transform: scale(1);
+}
+
+.ai-typing-indicator {
+  display: flex;
+  gap: 4px;
+  padding: 8px 12px;
+  background-color: #f0f0f0;
+  border-radius: 12px;
+  align-self: flex-start;
+  width: fit-content;
+  animation: message-appear 0.3s ease-out;
+}
+
+.ai-typing-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #888;
+  border-radius: 50%;
+  animation: typing-animation 1.4s infinite ease-in-out;
+}
+
+.ai-typing-dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.ai-typing-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.ai-typing-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typing-animation {
+  0%, 60%, 100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-4px);
+  }
+}
+
+/* 设置按钮和菜单样式 */
+.ai-settings-button {
+  margin-right: 10px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.ai-settings-button:hover {
+  opacity: 1;
+}
+
+.ai-settings-menu {
+  position: absolute;
+  top: 50px;
+  right: 10px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 1001;
+  transition: all 0.3s ease;
+  width: 180px;
+}
+
+.ai-settings-menu.hidden {
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+}
+
+.ai-settings-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 5px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.ai-settings-item:last-child {
+  border-bottom: none;
+}
+
+.ai-settings-item input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.ai-settings-item label {
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+}
+
+.ai-settings-menu button {
+  padding: 8px 12px;
+  background-color: #f5f5f5;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.ai-settings-menu button:hover {
+  background-color: #e0e0e0;
+}
+
+/* 流式输出相关样式 */
+.ai-message {
+  transition: background-color 0.3s; /* 平滑过渡效果 */
+}
+
+.ai-message.streaming {
+  background-color: #f8f8f8; /* 稍微不同的背景色表示正在流式输出 */
+  border-left: 3px solid #4a6bff;
+  animation: pulse 2s infinite; /* 添加脉冲效果 */
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(74, 107, 255, 0.2);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(74, 107, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(74, 107, 255, 0);
+  }
+}
+
+/* 动态代码块样式 - 当流式输出代码时使用 */
+.ai-message pre.code-block {
+  overflow: hidden; /* 防止代码溢出 */
+  position: relative; /* 用于放置动画元素 */
+  white-space: pre-wrap; /* 确保代码可以换行 */
+}
+
+/* 代码高亮 - 为不同语言的代码块设置不同的边框颜色 */
+.ai-message pre.code-block[data-language="javascript"],
+.ai-message pre.code-block[data-language="js"] {
+  border-left: 3px solid #f7df1e;
+}
+
+.ai-message pre.code-block[data-language="python"],
+.ai-message pre.code-block[data-language="py"] {
+  border-left: 3px solid #3572A5;
+}
+
+.ai-message pre.code-block[data-language="html"] {
+  border-left: 3px solid #e34c26;
+}
+
+.ai-message pre.code-block[data-language="css"] {
+  border-left: 3px solid #563d7c;
+}
+
+/* Markdown渲染样式 */
+.ai-message h1, 
+.ai-message h2, 
+.ai-message h3, 
+.ai-message h4, 
+.ai-message h5, 
+.ai-message h6 {
+  margin: 10px 0 6px 0;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.ai-message h1 {
+  font-size: 1.7em;
+  border-bottom: 1px solid #eaecef;
+  padding-bottom: 6px;
+}
+
+.ai-message h2 {
+  font-size: 1.5em;
+  border-bottom: 1px solid #eaecef;
+  padding-bottom: 4px;
+}
+
+.ai-message h3 {
+  font-size: 1.3em;
+}
+
+.ai-message h4 {
+  font-size: 1.2em;
+}
+
+.ai-message h5 {
+  font-size: 1.1em;
+}
+
+.ai-message h6 {
+  font-size: 1em;
+  color: #666;
+}
+
+.ai-message p {
+  margin: 6px 0;
+  line-height: 1.5;
+}
+
+.ai-message ul,
+.ai-message ol {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.ai-message ul li,
+.ai-message ol li {
+  margin: 4px 0;
+  line-height: 1.5;
+}
+
+.ai-message blockquote {
+  margin: 8px 0;
+  padding: 4px 12px;
+  border-left: 4px solid #ddd;
+  color: #555;
+  background-color: #f8f8f8;
+}
+
+.ai-message a {
+  color: #4a6bff;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.ai-message a:hover {
+  text-decoration: underline;
+  color: #3a5aee;
+}
+
+.ai-message strong {
+  font-weight: 600;
+}
+
+.ai-message em {
+  font-style: italic;
+}
+
+.ai-message del {
+  text-decoration: line-through;
+  color: #666;
+}
+
+/* 表格样式 */
+.ai-message table,
+.user-message table {
+  border-collapse: collapse;
+  margin: 10px 0;
+  width: 100%;
+  font-size: 0.95em;
+  overflow-x: auto;
+  display: block;
+}
+
+.ai-message table.md-table,
+.user-message table.md-table {
+  border: 1px solid #ddd;
+}
+
+.ai-message table.simple-table,
+.user-message table.simple-table {
+  border: none;
+  margin: 4px 0;
+}
+
+.ai-message table td,
+.user-message table td {
+  padding: 6px 8px;
+  text-align: left;
+  word-break: break-word;
+}
+
+.ai-message table.md-table td,
+.user-message table.md-table td {
+  border: 1px solid #ddd;
+}
+
+.ai-message table.simple-table td,
+.user-message table.simple-table td {
+  border: none;
+  padding: 2px 4px;
+}
+
+.ai-message table tr:nth-child(odd),
+.user-message table tr:nth-child(odd) {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.ai-message table.md-table tr:first-child,
+.user-message table.md-table tr:first-child {
+  background-color: rgba(0, 0, 0, 0.06);
+  font-weight: 600;
+}
+
+.ai-message table.md-table tr.md-table-separator,
+.user-message table.md-table tr.md-table-separator {
+  display: none;
+} 
