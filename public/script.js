@@ -91,7 +91,9 @@ const upperFirst = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 // 创建WebSocket连接
 let socket = null;
 try {
-  socket = new WebSocket('ws://localhost:3001');
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const host = window.location.host; // 自动获取当前域名和端口
+  socket = new WebSocket(`${protocol}//${host}`);
 
   socket.onopen = () => {
     console.log('WebSocket连接已建立');
@@ -1557,7 +1559,9 @@ document.addEventListener('DOMContentLoaded', () => {
             this.writeToOutput('WebSocket连接不可用，尝试重新连接...');
 
             try {
-              socket = new WebSocket('ws://localhost:3001');
+              const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+              const host = window.location.host; // 自动获取当前域名和端口
+              socket = new WebSocket(`${protocol}//${host}`);
 
               socket.onopen = () => {
                 console.log('WebSocket重新连接成功');
@@ -2694,7 +2698,9 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log(`尝试第${attempt}次重新连接WebSocket...`);
 
         try {
-          const newSocket = new WebSocket('ws://localhost:3001');
+          const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+          const host = window.location.host; // 自动获取当前域名和端口
+          const newSocket = new WebSocket(`${protocol}//${host}`);
 
           newSocket.onopen = () => {
             console.log('WebSocket重新连接成功');
