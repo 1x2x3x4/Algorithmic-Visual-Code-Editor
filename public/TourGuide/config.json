@@ -13,13 +13,8 @@
     "title": "代码编辑区",
     "content": "在这里编写你的代码。你可以选择不同的编程语言，我们支持C、C++、Python和Java。",
     "target": "#monaco-editor-container",
-    "clip": true,
-    "highlight": {
-      "left": 10,
-      "top": 100,
-      "width": 920,
-      "height": 630
-    }
+    "clip": true
+
   },
   {
     "title": "语言选择",
