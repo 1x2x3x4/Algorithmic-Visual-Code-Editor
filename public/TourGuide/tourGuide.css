@@ -1,0 +1,126 @@
+/* TourGuide 引导组件样式 */
+#introduce {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9998;
+  pointer-events: auto;
+}
+
+.introduce-box {
+  position: absolute;
+  width: 280px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 16px;
+  color: #333;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.introduce-box:after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background-color: #ffffff;
+  transform: rotate(45deg);
+}
+
+.introduce-box[data-position="left"]:after {
+  top: 20px;
+  right: -6px;
+}
+
+.introduce-box[data-position="right"]:after {
+  top: 20px;
+  left: -6px;
+}
+
+.introduce-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0 0 12px 0;
+  color: #1a73e8;
+}
+
+.introduce-desc {
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0 0 20px 0;
+}
+
+.introduce-operate {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.introduce-operate button {
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.exit {
+  background: transparent;
+  border: 1px solid #ddd;
+  color: #666;
+}
+
+.exit:hover {
+  background-color: #f5f5f5;
+}
+
+.next, .prev {
+  background-color: #1a73e8;
+  border: none;
+  color: white;
+}
+
+.next:hover, .prev:hover {
+  background-color: #0d62d1;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 蒙版和高亮效果 */
+.tour-guide-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9990;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.tour-guide-mask svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* 兼容旧的高亮样式 */
+.tour-highlighted {
+  position: relative;
+  z-index: 10000;
+  box-shadow: 0 0 0 4px rgba(26, 115, 232, 0.5);
+  transition: box-shadow 0.3s;
+}
